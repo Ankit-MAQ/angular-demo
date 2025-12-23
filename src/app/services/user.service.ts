@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
+import {  STUDENT_API_CONFIG, buildStudentUrl } from '../config/api.config';
 
 export interface User {
   // Normalized fields
@@ -22,17 +23,28 @@ export interface User {
   mobile?: string;
 }
 
+export interface StudentApprovalResponse {
+  success: boolean;
+  message: string;
+  updatedStudent: {
+    studentId: number | string;
+    studentName: string | null;
+    course: string | null;
+    email: string | null;
+    mobile: string | null;
+    status: string | null;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://mp493fbdb64c15395114.free.beeceptor.com/api/users';
-
   constructor(private http: HttpClient) {}
 
   getAllUsers(): Observable<User[]> {
-    console.log('Fetching users from:', this.apiUrl);
-    return this.http.get<User[]>(this.apiUrl).pipe(
+    console.log('Fetching users from:', STUDENT_API_CONFIG.getAllStudents.url);
+    return this.http.get<User[]>(STUDENT_API_CONFIG.getAllStudents.url).pipe(
       tap(
         (data) => {
           console.log('Successfully fetched users:', data);
@@ -45,7 +57,8 @@ export class UserService {
   }
 
   getUserById(id: string): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/${id}`).pipe(
+    const url = buildStudentUrl(id);
+    return this.http.get<User>(url).pipe(
       tap(
         (data) => console.log('User fetched:', data),
         (error) => console.error('Error fetching user:', error)
@@ -54,7 +67,7 @@ export class UserService {
   }
 
   createUser(user: User): Observable<User> {
-    return this.http.post<User>(this.apiUrl, user).pipe(
+    return this.http.post<User>(STUDENT_API_CONFIG.getAllStudents.url, user).pipe(
       tap(
         (data) => console.log('User created:', data),
         (error) => console.error('Error creating user:', error)
@@ -63,7 +76,8 @@ export class UserService {
   }
 
   updateUser(id: string, user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/${id}`, user).pipe(
+    const url = buildStudentUrl(id);
+    return this.http.put<User>(url, user).pipe(
       tap(
         (data) => console.log('User updated:', data),
         (error) => console.error('Error updating user:', error)
@@ -72,7 +86,8 @@ export class UserService {
   }
 
   partialUpdateUser(id: string, updates: Partial<User>): Observable<User> {
-    return this.http.patch<User>(`${this.apiUrl}/${id}`, updates).pipe(
+    const url = buildStudentUrl(id);
+    return this.http.patch<User>(url, updates).pipe(
       tap(
         (data) => console.log('User partially updated:', data),
         (error) => console.error('Error partially updating user:', error)
@@ -81,7 +96,8 @@ export class UserService {
   }
 
   deleteUser(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    const url = buildStudentUrl(id);
+    return this.http.delete<void>(url).pipe(
       tap(
         () => console.log('User deleted:', id),
         (error) => console.error('Error deleting user:', error)
@@ -91,7 +107,8 @@ export class UserService {
 
   approveUser(id: string): Observable<User> {
     console.log('Approving user:', id);
-    return this.http.patch<User>(`${this.apiUrl}/${id}`, { status: 'Approved' }).pipe(
+    const url = buildStudentUrl(id);
+    return this.http.patch<User>(url, { status: 'Approved' }).pipe(
       tap(
         (data) => console.log('User approved:', data),
         (error) => console.error('Error approving user:', error)
@@ -99,9 +116,36 @@ export class UserService {
     );
   }
 
+  /**
+   * Approve student using Student API
+   * Sends a PUT request with the student data and sets status to approved
+   */
+  approveStudent(studentId: string | number, studentData?: any): Observable<StudentApprovalResponse> {
+    console.log('Approving student:', studentId);
+    const url = buildStudentUrl(String(studentId));
+    
+    // Prepare the request body matching the expected format
+    const requestBody = {
+      studentId: studentId,
+      studentName: studentData?.studentName || null,
+      course: studentData?.course || null,
+      email: studentData?.email || null,
+      mobile: studentData?.mobile || null,
+      status: 'Approved'
+    };
+
+    return this.http.put<StudentApprovalResponse>(url, requestBody).pipe(
+      tap(
+        (response) => console.log('Student approved:', response),
+        (error) => console.error('Error approving student:', error)
+      )
+    );
+  }
+
   rejectUser(id: string): Observable<User> {
     console.log('Rejecting user:', id);
-    return this.http.patch<User>(`${this.apiUrl}/${id}`, { status: 'Rejected' }).pipe(
+    const url = buildStudentUrl(id);
+    return this.http.patch<User>(url, { status: 'Rejected' }).pipe(
       tap(
         (data) => console.log('User rejected:', data),
         (error) => console.error('Error rejecting user:', error)
@@ -109,17 +153,43 @@ export class UserService {
     );
   }
 
+  /**
+   * Reject student using Student API
+   * Sends a PUT request with the student data and sets status to rejected
+   */
+  rejectStudent(studentId: string | number, studentData?: any): Observable<StudentApprovalResponse> {
+    console.log('Rejecting student:', studentId);
+    const url = buildStudentUrl(String(studentId));
+    
+    // Prepare the request body matching the expected format
+    const requestBody = {
+      studentId: studentId,
+      studentName: studentData?.studentName || null,
+      course: studentData?.course || null,
+      email: studentData?.email || null,
+      mobile: studentData?.mobile || null,
+      status: 'Rejected'
+    };
+
+    return this.http.put<StudentApprovalResponse>(url, requestBody).pipe(
+      tap(
+        (response) => console.log('Student rejected:', response),
+        (error) => console.error('Error rejecting student:', error)
+      )
+    );
+  }
+
   // Normalize data from API to handle inconsistent field names
   normalizeUser(user: any): User {
     const normalized: User = {
-      id: user.id || '',
+      id: user.id || String(user.studentId) || '',
       name: user.name || user.Name || user.studentName || '',
       email: user.email || user.Email || '',
       degree: user.degree || user.Degree || user.course || '',
       university: user.university || user.University || '',
       status: user.status || 'Pending',
       mobile: user.mobile || '',
-      studentId: user.studentId || ''
+      studentId: user.studentId || user.id || ''
     };
     console.log('normalizeUser input:', user, 'output:', normalized);
     return normalized;

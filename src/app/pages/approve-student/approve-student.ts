@@ -75,19 +75,20 @@ export class ApproveStudent implements OnInit, OnDestroy {
   }
 
   onApprove(studentId: string): void {
+    const student = this.students.find(s => s.id === studentId);
+    
     this.userService
-      .approveUser(studentId)
+      .approveStudent(studentId, student)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (updatedUser: any) => {
-          console.log('Approve response:', updatedUser);
-          const normalizedUser = this.userService.normalizeUser(updatedUser);
-          const index = this.students.findIndex(s => s.id === studentId);
-          if (index !== -1) {
-            this.students[index] = normalizedUser;
+        next: (response: any) => {
+          console.log('Approve response:', response);
+          if (response.success && student) {
+            // Update the local student object with the new status
+            student.status = 'Approved';
             this.students = [...this.students]; // Force change detection
+            this.cdr.markForCheck();
           }
-          this.cdr.markForCheck();
           console.log(`Student ${studentId} approved successfully`);
         },
         error: (err) => {
@@ -98,19 +99,20 @@ export class ApproveStudent implements OnInit, OnDestroy {
   }
 
   onReject(studentId: string): void {
+    const student = this.students.find(s => s.id === studentId);
+    
     this.userService
-      .rejectUser(studentId)
+      .rejectStudent(studentId, student)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (updatedUser: any) => {
-          console.log('Reject response:', updatedUser);
-          const normalizedUser = this.userService.normalizeUser(updatedUser);
-          const index = this.students.findIndex(s => s.id === studentId);
-          if (index !== -1) {
-            this.students[index] = normalizedUser;
+        next: (response: any) => {
+          console.log('Reject response:', response);
+          if (response.success && student) {
+            // Update the local student object with the new status
+            student.status = 'Rejected';
             this.students = [...this.students]; // Force change detection
+            this.cdr.markForCheck();
           }
-          this.cdr.markForCheck();
           console.log(`Student ${studentId} rejected successfully`);
         },
         error: (err) => {
