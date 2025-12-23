@@ -1,0 +1,52 @@
+<div class="approve-container">
+  <h1>Approve Students</h1>
+  
+  <div *ngIf="loading" class="loading">
+    <p>Loading students...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadStudents()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <table class="approve-table" *ngIf="students.length > 0; else noStudents">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Degree/Course</th>
+          <th>University</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students" [class.empty-row]="!student.name">
+          <td>{{ student.id }}</td>
+          <td>{{ student.name || '-' }}</td>
+          <td>{{ student.email || '-' }}</td>
+          <td>{{ student.degree || '-' }}</td>
+          <td>{{ student.university || '-' }}</td>
+          <td>
+            <span class="status-badge" [class.pending]="student.status === 'Pending'" 
+                  [class.approved]="student.status === 'Approved'" 
+                  [class.rejected]="student.status === 'Rejected'">
+              {{ student.status || 'Pending' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn-approve" (click)="onApprove(student.id)" [disabled]="student.status === 'Approved'">Approve</button>
+            <button class="btn-reject" (click)="onReject(student.id)" [disabled]="student.status === 'Rejected'">Reject</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noStudents>
+      <p class="no-data">No students found.</p>
+    </ng-template>
+  </div>
+</div>

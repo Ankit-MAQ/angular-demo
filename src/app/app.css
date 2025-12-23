@@ -1,0 +1,12 @@
+.app-container {
+  height: 100vh;
+}
+
+.body-container {
+  display: flex;
+}
+
+.content-container {
+  padding: 20px;
+  flex: 1;
+}

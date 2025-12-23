@@ -1,0 +1,139 @@
+.approve-container {
+        padding: 2rem;
+      }
+
+      h1 {
+        margin-bottom: 2rem;
+        color: #333;
+      }
+
+      .approve-table {
+        width: 100%;
+        border-collapse: collapse;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .approve-table thead {
+        background-color: #f5f5f5;
+      }
+
+      .approve-table th,
+      .approve-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .approve-table th {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .approve-table tbody tr:hover {
+        background-color: #f9f9f9;
+      }
+
+      .approve-table td {
+        color: #666;
+      }
+
+      button {
+        padding: 8px 16px;
+        margin-right: 8px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-approve {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .btn-approve:hover:not(:disabled) {
+        background-color: #45a049;
+        box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+      }
+
+      .btn-reject {
+        background-color: #f44336;
+        color: white;
+      }
+
+      .btn-reject:hover:not(:disabled) {
+        background-color: #da190b;
+        box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+      }
+
+      .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .status-badge.pending {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+
+      .status-badge.approved {
+        background-color: #d4edda;
+        color: #155724;
+      }
+
+      .status-badge.rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+
+      .empty-row {
+        opacity: 0.6;
+      }
+
+      .loading {
+        padding: 2rem;
+        text-align: center;
+        color: #666;
+        font-size: 16px;
+      }
+
+      .error {
+        padding: 2rem;
+        background-color: #ffebee;
+        border: 1px solid #f44336;
+        border-radius: 4px;
+        color: #c62828;
+        margin-bottom: 1rem;
+      }
+
+      .error button {
+        background-color: #f44336;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        margin-top: 1rem;
+      }
+
+      .error button:hover {
+        background-color: #da190b;
+      }
+
+      .no-data {
+        padding: 2rem;
+        text-align: center;
+        color: #999;
+        font-size: 16px;
+      }
